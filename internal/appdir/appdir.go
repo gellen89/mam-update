@@ -19,61 +19,17 @@ func GetAppDirs(appName string) (AppDirs, error) {
 		return AppDirs{}, err
 	}
 
-	// switch runtime.GOOS {
-	// case "darwin":
-	// 	return AppDirs{
-	// 		Config: filepath.Join(homeDir, "Library", "Preferences", appName),
-	// 		Data:   filepath.Join(homeDir, "Library", "Application Support", appName),
-	// 		Cache:  filepath.Join(homeDir, "Library", "Caches", appName),
-	// 	}, nil
+	appDir := homeDir
 
-	// case "linux":
-	// 	// Check XDG environment variables with fallbacks
-	// 	configHome := os.Getenv("XDG_CONFIG_HOME")
-	// 	if configHome == "" {
-	// 		configHome = filepath.Join(homeDir, ".config")
-	// 	}
-
-	// 	dataHome := os.Getenv("XDG_DATA_HOME")
-	// 	if dataHome == "" {
-	// 		dataHome = filepath.Join(homeDir, ".local", "share")
-	// 	}
-
-	// 	cacheHome := os.Getenv("XDG_CACHE_HOME")
-	// 	if cacheHome == "" {
-	// 		cacheHome = filepath.Join(homeDir, ".cache")
-	// 	}
-
-	// 	return AppDirs{
-	// 		Config: filepath.Join(configHome, appName),
-	// 		Data:   filepath.Join(dataHome, appName),
-	// 		Cache:  filepath.Join(cacheHome, appName),
-	// 	}, nil
-
-	// case "windows":
-	// 	appData := os.Getenv("APPDATA")
-	// 	if appData == "" {
-	// 		appData = filepath.Join(homeDir, "AppData", "Roaming")
-	// 	}
-	// 	return AppDirs{
-	// 		Config: filepath.Join(appData, appName),
-	// 		Data:   filepath.Join(appData, appName),
-	// 		Cache:  filepath.Join(appData, appName, "cache"),
-	// 	}, nil
-
-	// default:
-	// 	// Fallback to dotfile pattern
-	// 	return AppDirs{
-	// 		Config: filepath.Join(homeDir, "."+appName),
-	// 		Data:   filepath.Join(homeDir, "."+appName),
-	// 		Cache:  filepath.Join(homeDir, "."+appName, "cache"),
-	// 	}, nil
-	// }
+	mamDir := os.Getenv("MAMUPDATE_DIR")
+	if mamDir != "" {
+		appDir = mamDir
+	}
 
 	return AppDirs{
-		Config: filepath.Join(homeDir, "."+appName),
-		Data:   filepath.Join(homeDir, "."+appName),
-		Cache:  filepath.Join(homeDir, "."+appName, "cache"),
+		Config: filepath.Join(appDir, "."+appName),
+		Data:   filepath.Join(appDir, "."+appName),
+		Cache:  filepath.Join(appDir, "."+appName, "cache"),
 	}, nil
 }
 
