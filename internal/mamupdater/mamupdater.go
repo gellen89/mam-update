@@ -52,7 +52,7 @@ func NewMamUpdater(config Config) (*MamUpdater, error) {
 
 	return &MamUpdater{
 		config:     config,
-		httpClient: &http.Client{Jar: jar},
+		httpClient: &http.Client{Jar: jar, Timeout: 10 * time.Second},
 		logger:     config.Logger,
 		updatUrl:   u,
 	}, nil
@@ -96,12 +96,17 @@ func (m *MamUpdater) Run() error {
 		return nil
 	}
 
-	// Load existing cookies if no initial cookies provided
+	// Write the current ip address to disk
+	if err := m.writeFile(m.config.IpPath, currentIP); err != nil {
+		return fmt.Errorf("failed to write new ip address: %w", err)
+	}
+
+	// Load existing cookies
 	if err := m.loadCookies(); err != nil {
 		return fmt.Errorf("failed to load cookies: %w", err)
 	}
 	// Update IP
-	return m.updateIP() // nil means use existing cookies
+	return m.updateIP()
 }
 
 func (m *MamUpdater) getCurrentIP() (string, error) {
@@ -206,12 +211,7 @@ func (m *MamUpdater) loadCookies() error {
 		return err
 	}
 
-	u, err := url.Parse(dynSeedBoxUrl)
-	if err != nil {
-		return err
-	}
-
-	m.httpClient.Jar.SetCookies(u, cookies)
+	m.httpClient.Jar.SetCookies(m.updatUrl, cookies)
 	return nil
 }
 
