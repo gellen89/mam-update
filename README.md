@@ -32,8 +32,8 @@ You can then run `./bin/mam-update` to invoke the program.
 All of this data is stored in `$MAMUPDATE_DIR/.mamdynupdate`
 
 - `MAM.cookie`
-  - This file will exist after the first run and stores HTTP Cookies from the HTTP Client cookie jar. This will be used used to popular the cookie jar on subsequent runs
+  - This file will exist after the first run and stores HTTP Cookies from the HTTP Client cookie jar. This will be used used to populate the cookie jar on subsequent runs
 - `MAM.ip`
-  - This file stores the IP address found during the most recent run. It is used on subsequent runs to determine if the UIP address has changed.
+  - This file stores the IP address found during the most recent run. It is used on subsequent runs to determine if the IP address has changed.
 - `last_run_time`
   - This file stores a timestamp that conforms to `RFC3339` of the last time the script ran. Ensures the script does not run more than once an hour.
