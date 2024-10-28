@@ -12,7 +12,7 @@ import (
 func main() {
 	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{}))
 
-	appdirs, err := appdir.GetAppDirs("mamdynupdate")
+	appdirs, err := appdir.GetAppDirs(".mamupdate")
 	if err != nil {
 		logger.Error("Failed to get app directories", "error", err)
 		os.Exit(1)

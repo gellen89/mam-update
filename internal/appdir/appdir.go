@@ -12,24 +12,27 @@ type AppDirs struct {
 	Cache  string
 }
 
-// GetAppDirs returns platform-specific directory paths for the application
 func GetAppDirs(appName string) (AppDirs, error) {
+	userProvidedDir := os.Getenv("MAMUPDATE_DIR")
+	if userProvidedDir != "" {
+		return AppDirs{
+			Config: userProvidedDir,
+			Data:   userProvidedDir,
+			Cache:  filepath.Join(userProvidedDir, ".cache"),
+		}, nil
+	}
+
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
 		return AppDirs{}, err
 	}
 
-	appDir := homeDir
-
-	mamDir := os.Getenv("MAMUPDATE_DIR")
-	if mamDir != "" {
-		appDir = mamDir
-	}
+	appDir := filepath.Join(homeDir, appName)
 
 	return AppDirs{
-		Config: filepath.Join(appDir, "."+appName),
-		Data:   filepath.Join(appDir, "."+appName),
-		Cache:  filepath.Join(appDir, "."+appName, "cache"),
+		Config: appDir,
+		Data:   appDir,
+		Cache:  filepath.Join(appDir, ".cache"),
 	}, nil
 }
 
