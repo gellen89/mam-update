@@ -1,5 +1,5 @@
 .PHONY: help default \
-        build build/linux \
+        build build/linux build/linux/amd64 \
 				lint \
 				vet \
         clean
@@ -16,6 +16,9 @@ build: vet ## Runs go vet and build the binary
 	go build -ldflags "-s -w" -o bin/mam-update *.go
 
 build/linux: vet ## Runs go vet and builds the binary specifically for Linux
+	GOOS=linux go build -ldflags "-s -w" -o bin/mam-update *.go
+
+build/linux/amd64: vet ## Runs go vet and builds the binary specifically for Linux amd64
 	GOOS=linux GOARCH=amd64 go build -ldflags "-s -w" -o bin/mam-update *.go
 
 clean: ## Cleans the bin directory
