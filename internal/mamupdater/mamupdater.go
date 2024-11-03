@@ -1,6 +1,7 @@
 package mamupdater
 
 import (
+	"context"
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
@@ -25,7 +26,7 @@ type Config struct {
 }
 
 type MamUpdater struct {
-	config     Config
+	config     *Config
 	httpClient *http.Client
 	logger     *slog.Logger
 	updatUrl   *url.URL
@@ -37,11 +38,12 @@ type dynamicSeedboxResponse struct {
 }
 
 const (
+	ipUrl         = "https://ifconfig.io/ip"
 	dynSeedBoxUrl = "https://t.myanonamouse.net/json/dynamicSeedbox.php"
 	minWaitPeriod = time.Hour
 )
 
-func NewMamUpdater(config Config) (*MamUpdater, error) {
+func NewMamUpdater(config *Config) (*MamUpdater, error) {
 	jar, err := cookiejar.New(&cookiejar.Options{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create cookie jar: %w", err)
@@ -59,26 +61,22 @@ func NewMamUpdater(config Config) (*MamUpdater, error) {
 	}, nil
 }
 
-func (m *MamUpdater) Run() error {
+func (m *MamUpdater) Run(ctx context.Context) error {
 	// Check for cookie file or MAM_ID
-	hasCookie, err := m.hasCookieFile()
-	if err != nil {
-		return fmt.Errorf("failed to check cookie file: %w", err)
-	}
-
+	hasCookie := m.hasCookieFile()
 	if !hasCookie && m.config.MamId == nil || *m.config.MamId == "" {
 		return fmt.Errorf("no cookie file found and MAM_ID not provided")
 	}
 
 	// Get current IP
-	currentIP, err := m.getCurrentIP()
+	currentIP, err := m.getCurrentIP(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to get current IP: %w", err)
 	}
 
 	// First run without cookie
 	if !hasCookie {
-		return m.handleFirstRun(*m.config.MamId)
+		return m.handleFirstRun(ctx, *m.config.MamId)
 	}
 
 	// Check if IP has changed
@@ -107,11 +105,15 @@ func (m *MamUpdater) Run() error {
 		return fmt.Errorf("failed to load cookies: %w", err)
 	}
 	// Update IP
-	return m.updateIP()
+	return m.updateIP(ctx)
 }
 
-func (m *MamUpdater) getCurrentIP() (string, error) {
-	resp, err := http.Get("https://ifconfig.io/ip")
+func (m *MamUpdater) getCurrentIP(ctx context.Context) (string, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ipUrl, http.NoBody)
+	if err != nil {
+		return "", err
+	}
+	resp, err := m.httpClient.Do(req)
 	if err != nil {
 		return "", err
 	}
@@ -149,8 +151,12 @@ func (m *MamUpdater) shouldSkipUpdate() (bool, error) {
 	return time.Since(lastRun) < minWaitPeriod, nil
 }
 
-func (m *MamUpdater) updateIP() error {
-	resp, err := m.httpClient.Get(dynSeedBoxUrl)
+func (m *MamUpdater) updateIP(ctx context.Context) error {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, dynSeedBoxUrl, http.NoBody)
+	if err != nil {
+		return err
+	}
+	resp, err := m.httpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to make request: %w", err)
 	}
@@ -179,7 +185,7 @@ func (m *MamUpdater) updateIP() error {
 	return nil
 }
 
-func (m *MamUpdater) handleFirstRun(mamID string) error {
+func (m *MamUpdater) handleFirstRun(ctx context.Context, mamID string) error {
 	// Create initial cookie with MAM_ID
 	initialCookies := []*http.Cookie{
 		{
@@ -189,15 +195,15 @@ func (m *MamUpdater) handleFirstRun(mamID string) error {
 	}
 	m.httpClient.Jar.SetCookies(m.updatUrl, initialCookies)
 
-	if err := m.updateIP(); err != nil {
+	if err := m.updateIP(ctx); err != nil {
 		return fmt.Errorf("first run failed: %w", err)
 	}
 	return nil
 }
 
-func (m *MamUpdater) hasCookieFile() (bool, error) {
+func (m *MamUpdater) hasCookieFile() bool {
 	_, err := os.Stat(m.config.CookiePath)
-	return !os.IsNotExist(err), nil
+	return !os.IsNotExist(err)
 }
 
 func (m *MamUpdater) loadCookies() error {
@@ -226,7 +232,7 @@ func (m *MamUpdater) saveCookies(cookies []*http.Cookie) error {
 	return gob.NewEncoder(file).Encode(cookies)
 }
 
-func (m *MamUpdater) readFile(path string) (string, bool, error) {
+func (m *MamUpdater) readFile(path string) (contents string, exists bool, err error) {
 	data, err := os.ReadFile(path)
 	if os.IsNotExist(err) {
 		return "", false, nil
@@ -237,6 +243,6 @@ func (m *MamUpdater) readFile(path string) (string, bool, error) {
 	return string(data), true, nil
 }
 
-func (m *MamUpdater) writeFile(path string, content string) error {
-	return os.WriteFile(path, []byte(content), 0666)
+func (m *MamUpdater) writeFile(path, content string) error {
+	return os.WriteFile(path, []byte(content), 0600)
 }

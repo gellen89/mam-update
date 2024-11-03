@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log/slog"
 	"os"
@@ -34,7 +35,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	config := mamupdater.Config{
+	config := &mamupdater.Config{
 		DataDir:     appdirs.Data,
 		CookiePath:  filepath.Join(appdirs.Data, "MAM.cookie"),
 		IpPath:      filepath.Join(appdirs.Data, "MAM.ip"),
@@ -48,8 +49,8 @@ func main() {
 		logger.Error("Failed to create updater", "error", err)
 		os.Exit(1)
 	}
-
-	if err := updater.Run(); err != nil {
+	ctx := context.Background()
+	if err := updater.Run(ctx); err != nil {
 		logger.Error("Failed to run updater", "error", err)
 		os.Exit(1)
 	}
