@@ -20,6 +20,7 @@ type Config struct {
 	IpPath      string
 	LastRunPath string
 	MamId       *string
+	Force       bool
 	Logger      *slog.Logger
 }
 
@@ -136,7 +137,7 @@ func (m *MamUpdater) shouldSkipUpdate() (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if !exists {
+	if !exists || m.config.Force {
 		return false, nil
 	}
 

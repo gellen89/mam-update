@@ -11,6 +11,14 @@ Program that handles dynamically setting the latest IP Address from your seedbox
 | MAM_ID        | The MAM ID given to you after creating a new session. This only needs to be provided on the first run. Subsequent runs pull from the stored cookies file. | false    |                  |
 | MAMUPDATE_DIR | The base directory that config, data, and cache are stored.                                                                                               | false    | $HOME/.mamupdate |
 
+### CLI Flags
+
+| Flag     | Description                                                                                                                                               | Required | Default Value    |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------- |
+| -mam-id  | The MAM ID given to you after creating a new session. This only needs to be provided on the first run. Subsequent runs pull from the stored cookies file. | false    |                  |
+| -mam-dir | The base directory that config, data, and cache are stored.                                                                                               | false    | $HOME/.mamupdate |
+| -force   | Can be used to override the `last_run_time`                                                                                                               | false    | $HOME/.mamupdate |
+
 ### Persistent Data
 
 - `MAM.cookie`

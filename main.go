@@ -58,6 +58,7 @@ func main() {
 type flagConfig struct {
 	MamId     *string
 	ConfigDir *string
+	Force     bool
 }
 
 func getFlags() *flagConfig {
@@ -65,12 +66,15 @@ func getFlags() *flagConfig {
 	flag.StringVar(&mamId, "mam-id", "", "Provide the mam-id used for the initial request.")
 	var mamDir string
 	flag.StringVar(&mamDir, "mam-dir", "", "Provide the directory where the config and data will be persisted.")
+	var force bool
+	flag.BoolVar(&force, "force", false, "Specify force to override the last run time")
 
 	flag.Parse()
 
 	return &flagConfig{
 		MamId:     &mamId,
 		ConfigDir: &mamDir,
+		Force:     force,
 	}
 }
 
