@@ -30,9 +30,10 @@ Program that handles dynamically setting the latest IP Address from your seedbox
 
 ## Building
 
-### Prerequisites
+### Requirements
 
 - Golang
+- Make
 
 To see the available commands, simply run `make` and it will print out what is available.
 
