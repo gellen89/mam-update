@@ -7,8 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/gellen89/mam-update-go/internal/appdir"
-	"github.com/gellen89/mam-update-go/internal/mamupdater"
+	"github.com/gellen89/mam-update/internal/appdir"
+	"github.com/gellen89/mam-update/internal/mamupdater"
 )
 
 func main() {
