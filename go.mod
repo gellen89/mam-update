@@ -1,3 +1,3 @@
-module github.com/gellen89/mam-update-go
+module github.com/gellen89/mam-update
 
 go 1.23.2
