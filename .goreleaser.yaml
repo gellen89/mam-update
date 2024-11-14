@@ -55,7 +55,9 @@ archives:
         format: zip
 
 changelog:
-  sort: asc
+  disable: "{{ .Env.DISABLE_CHANGELOG }}"
+  use: github-native
+  sort: desc
   filters:
     exclude:
       - "^docs:"
