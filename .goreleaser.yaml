@@ -20,7 +20,7 @@ builds:
       - -s -w
 
 kos:
-  - repository: ghcr.io/gellen89/mam-update-go
+  - repository: ghcr.io/gellen89/mam-update
     tags:
       - "{{.Version}}"
       - latest
@@ -32,6 +32,12 @@ kos:
 
 docker_signs:
   - artifacts: manifests
+    output: true
+    cmd: cosign
+    args:
+      - sign
+      - --yes  # Automatically confirm any prompts
+      - '${artifact}'
 
 archives:
   - format: tar.gz
@@ -58,6 +64,7 @@ changelog:
 checksum:
   name_template: "{{ .ProjectName }}_{{ .Version }}_SHA256SUMS"
   algorithm: sha256
+
 signs:
   - artifacts: checksum
     # Used by GH Action to sign with a specific fingerprint
@@ -71,3 +78,6 @@ signs:
         "--detach-sign",
         "${artifact}",
       ]
+
+sboms:
+  - artifacts: archive
