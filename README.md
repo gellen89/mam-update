@@ -62,3 +62,29 @@ This also includes SBOM as well as checksums with a GPG signature.
 
 Docker images are pre-built for amd64 and arm64 and can be found in [ghcr.io for this repository](https://github.com/gellen89/mam-update/pkgs/container/mam-update).
 The registry also containts SBOM and a sig for each release.
+
+## Release Verification
+
+### Binaries
+
+All binaries are signed with the GPG key found in the [KEYS](./KEYS) file.
+
+Fingerprint: `7BE9 B51A 8DBE 0FE8 FBDE  323E 6737 C4DA ADBD 361B`
+
+You can verify the computed checksums by doing the following:
+
+1. Download the public key and the relevant `.sig` and `SHA256SUMS` file from the releases page.
+2. Import it: `gpg --import KEYS`
+3. Verify the signature: `gpg --verify mam-update_<version>_SHA256SUMS.sig mam-update_<version>_SHA256SUMS`
+
+### Docker Images
+
+All docker images are built using [ko](https://ko.build) and are signed with [cosign](https://github.com/sigstore/cosign)
+
+The signing happens using `cosign` keyless sign mode via Github Actions.
+
+To verify the image, run the following command:
+
+```
+cosign verify --certificate-oidc-issuer=https://github.com/login/oauth --certificate-identity-regexp github ghcr.io/gellen89/mam-update:latest
+```
