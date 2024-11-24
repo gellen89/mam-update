@@ -17,10 +17,11 @@ func main() {
 	flagCfg := getFlags()
 
 	mamId := getMamId(flagCfg)
+	mamDir := getMamDir(flagCfg)
 
 	var appdirs *appdir.AppDirs
-	if flagCfg.ConfigDir != nil && *flagCfg.ConfigDir != "" {
-		appdirs = appdir.New(*flagCfg.ConfigDir)
+	if mamDir != nil && *mamDir != "" {
+		appdirs = appdir.New(*mamDir)
 	} else {
 		var err error
 		appdirs, err = appdir.NewFromAppName(".mamupdate")
@@ -86,6 +87,17 @@ func getMamId(flagCfg *flagConfig) *string {
 	envMamId := os.Getenv("MAM_ID")
 	if envMamId != "" {
 		return &envMamId
+	}
+	return nil
+}
+
+func getMamDir(flagCfg *flagConfig) *string {
+	if flagCfg.ConfigDir != nil && *flagCfg.ConfigDir != "" {
+		return flagCfg.ConfigDir
+	}
+	envMamDir := os.Getenv("MAMUPDATE_DIR")
+	if envMamDir != "" {
+		return &envMamDir
 	}
 	return nil
 }
