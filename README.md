@@ -15,11 +15,11 @@ The `MAM_ID` is only required for the very first run. Subsequent runs will pull 
 
 ### CLI Flags
 
-| Flag     | Description                                                                                                                                               | Required | Default Value    |
-| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------- |
-| -mam-id  | The MAM ID given to you after creating a new session. This only needs to be provided on the first run. Subsequent runs pull from the stored cookies file. | false    |                  |
-| -mam-dir | The base directory that config, data, and cache are stored.                                                                                               | false    | $HOME/.mamupdate |
-| -force   | Can be used to override the `last_run_time`                                                                                                               | false    | false            |
+| Flag     | Description                                                                                                                                                                 | Required | Default Value    |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------- |
+| -mam-id  | The MAM ID given to you after creating a new session. This only needs to be provided on the first run. Subsequent runs pull from the stored cookies file. Overrides $MAM_ID | false    |                  |
+| -mam-dir | The base directory that config, data, and cache are stored. Overrides $MAMUPDATE_DIR                                                                                        | false    | $HOME/.mamupdate |
+| -force   | Can be used to override the `last_run_time`                                                                                                                                 | false    | false            |
 
 ### Persistent Data
 
