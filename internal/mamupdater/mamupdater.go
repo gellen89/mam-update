@@ -68,6 +68,7 @@ func (m *MamUpdater) Run(ctx context.Context) error {
 		return fmt.Errorf("no cookie file found and MAM_ID not provided")
 	}
 
+	m.logger.Debug("retrieving ip address...")
 	// Get current IP
 	currentIP, err := m.getCurrentIP(ctx)
 	if err != nil {
@@ -76,6 +77,7 @@ func (m *MamUpdater) Run(ctx context.Context) error {
 
 	// First run without cookie
 	if !hasCookie {
+		m.logger.Debug("no cookie found, handling first run")
 		return m.handleFirstRun(ctx, *m.config.MamId)
 	}
 
@@ -87,6 +89,8 @@ func (m *MamUpdater) Run(ctx context.Context) error {
 		return nil
 	}
 
+	m.logger.Debug("ip address changed, checking if should should update")
+
 	// Check last run time
 	if shouldSkip, err := m.shouldSkipUpdate(); err != nil {
 		return fmt.Errorf("failed to check last run time: %w", err)
@@ -95,17 +99,24 @@ func (m *MamUpdater) Run(ctx context.Context) error {
 		return nil
 	}
 
-	// Write the current ip address to disk
-	if err := m.writeFile(m.config.IpPath, currentIP); err != nil {
-		return fmt.Errorf("failed to write new ip address: %w", err)
-	}
+	m.logger.Debug("handling ip address update")
 
 	// Load existing cookies
 	if err := m.loadCookies(); err != nil {
 		return fmt.Errorf("failed to load cookies: %w", err)
 	}
+	m.logger.Debug("cookies loaded")
 	// Update IP
-	return m.updateIP(ctx)
+	if err := m.updateIP(ctx); err != nil {
+		return fmt.Errorf("failed to update ip address: %w", err)
+	}
+	m.logger.Debug("ip address updated successfully")
+	// Write the current ip address to disk
+	if err := m.writeFile(m.config.IpPath, currentIP); err != nil {
+		return fmt.Errorf("failed to write new ip address: %w", err)
+	}
+	m.logger.Debug("successfully wrote new ip address to disk")
+	return nil
 }
 
 func (m *MamUpdater) getCurrentIP(ctx context.Context) (string, error) {

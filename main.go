@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -30,6 +31,7 @@ func main() {
 			os.Exit(1)
 		}
 	}
+	logger.Debug(fmt.Sprintf("using mam dir: %s", appdirs.Data))
 
 	if err := appdirs.EnsureDirs(); err != nil {
 		logger.Error("Failed to ensure directories exist", "error", err)
@@ -55,6 +57,7 @@ func main() {
 		logger.Error("Failed to run updater", "error", err)
 		os.Exit(1)
 	}
+	logger.Debug("run completed")
 }
 
 type flagConfig struct {
