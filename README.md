@@ -12,6 +12,7 @@ The `MAM_ID` is only required for the very first run. Subsequent runs will pull 
 | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------- |
 | MAM_ID        | The MAM ID given to you after creating a new session. This only needs to be provided on the first run. Subsequent runs pull from the stored cookies file. | false    |                  |
 | MAMUPDATE_DIR | The base directory that config, data, and cache are stored.                                                                                               | false    | $HOME/.mamupdate |
+| LOG_LEVEL     | Can be used to set the log level (debug, info, warn, error)                                                                                               | false    | info             |
 
 ### CLI Flags
 
@@ -20,6 +21,7 @@ The `MAM_ID` is only required for the very first run. Subsequent runs will pull 
 | -mam-id  | The MAM ID given to you after creating a new session. This only needs to be provided on the first run. Subsequent runs pull from the stored cookies file. Overrides $MAM_ID | false    |                  |
 | -mam-dir | The base directory that config, data, and cache are stored. Overrides $MAMUPDATE_DIR                                                                                        | false    | $HOME/.mamupdate |
 | -force   | Can be used to override the `last_run_time`                                                                                                                                 | false    | false            |
+| -level   | Can be used to set the log level (debug, info, warn, error). Overrides $LOG_LEVEL                                                                                           | false    | info             |
 
 ### Persistent Data
 

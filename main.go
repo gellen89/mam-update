@@ -7,15 +7,18 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/gellen89/mam-update/internal/appdir"
 	"github.com/gellen89/mam-update/internal/mamupdater"
 )
 
 func main() {
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{}))
-
 	flagCfg := getFlags()
+
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		Level: getLogLevel(flagCfg),
+	}))
 
 	mamId := getMamId(flagCfg)
 	mamDir := getMamDir(flagCfg)
@@ -64,6 +67,7 @@ type flagConfig struct {
 	MamId     *string
 	ConfigDir *string
 	Force     bool
+	LogLevel  *string
 }
 
 func getFlags() *flagConfig {
@@ -72,7 +76,9 @@ func getFlags() *flagConfig {
 	var mamDir string
 	flag.StringVar(&mamDir, "mam-dir", "", "Provide the directory where the config and data will be persisted.")
 	var force bool
-	flag.BoolVar(&force, "force", false, "Specify force to override the last run time")
+	flag.BoolVar(&force, "force", false, "Specify force to override the last run time.")
+	var loglevel string
+	flag.StringVar(&loglevel, "level", "info", "Specify a log level (debug, info, warn, error) default: info.")
 
 	flag.Parse()
 
@@ -80,6 +86,7 @@ func getFlags() *flagConfig {
 		MamId:     &mamId,
 		ConfigDir: &mamDir,
 		Force:     force,
+		LogLevel:  &loglevel,
 	}
 }
 
@@ -103,4 +110,30 @@ func getMamDir(flagCfg *flagConfig) *string {
 		return &envMamDir
 	}
 	return nil
+}
+
+func getLogLevel(flagCfg *flagConfig) slog.Level {
+	if flagCfg.LogLevel != nil && *flagCfg.LogLevel != "" {
+		return toSlogLevel(*flagCfg.LogLevel)
+	}
+	envlevel := os.Getenv("LOG_LEVEL")
+	if envlevel != "" {
+		return toSlogLevel(envlevel)
+	}
+	return slog.LevelInfo
+}
+
+func toSlogLevel(input string) slog.Level {
+	switch strings.ToLower(input) {
+	case "debug":
+		return slog.LevelDebug
+	case "info":
+		return slog.LevelInfo
+	case "warn":
+		return slog.LevelWarn
+	case "error":
+		return slog.LevelError
+	default:
+		return slog.LevelInfo
+	}
 }
