@@ -78,7 +78,7 @@ func getFlags() *flagConfig {
 	var force bool
 	flag.BoolVar(&force, "force", false, "Specify force to override the last run time.")
 	var loglevel string
-	flag.StringVar(&loglevel, "level", "info", "Specify a log level (debug, info, warn, error) default: info.")
+	flag.StringVar(&loglevel, "level", "", "Specify a log level (debug, info, warn, error) default: info.")
 
 	flag.Parse()
 
