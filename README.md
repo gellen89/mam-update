@@ -88,3 +88,18 @@ To verify the image, run the following command:
 ```
 cosign verify --certificate-oidc-issuer=https://github.com/login/oauth --certificate-identity-regexp github ghcr.io/gellen89/mam-update:latest
 ```
+
+### Using the Docker Image
+
+This example assumes running withing a VPN network like `gluetun`. If you aren't doing this, leave it off.
+Just like the above configuration, the `MAM_ID` is only needed for the first invocation until there is a cached cookie. However, there is no harm in providing it everytime.
+
+```
+docker run \
+-e MAM_ID=<token> \
+-e MAMUPDATE_DIR=/mam \
+-v /volume1/docker/mam/data:/mam \
+--user $(id -u):$(id -g) \
+--network container:gluetun \
+ghcr.io/gellen89/mam-update:latest
+```
