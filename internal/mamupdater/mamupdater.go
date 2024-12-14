@@ -197,7 +197,7 @@ func (m *MamUpdater) updateIP(ctx context.Context) error {
 	return nil
 }
 
-func (m *MamUpdater) handleFirstRun(ctx context.Context, mamID string, ipAddress string) error {
+func (m *MamUpdater) handleFirstRun(ctx context.Context, mamID, ipAddress string) error {
 	// Create initial cookie with MAM_ID
 	initialCookies := []*http.Cookie{
 		{
