@@ -78,7 +78,16 @@ func (m *MamUpdater) Run(ctx context.Context) error {
 	// First run without cookie
 	if !hasCookie {
 		m.logger.Debug("no cookie found, handling first run")
-		return m.handleFirstRun(ctx, *m.config.MamId)
+		err := m.handleFirstRun(ctx, *m.config.MamId)
+		if err != nil {
+			return fmt.Errorf("failed to handle first run: %w", err)
+		}
+		m.logger.Debug("handled first run update successfully")
+		if err := m.writeFile(m.config.IpPath, currentIP); err != nil {
+			return fmt.Errorf("failed to write new ip address: %w", err)
+		}
+		m.logger.Debug("successfully wrote new ip address to disk")
+		return nil
 	}
 
 	// Check if IP has changed
@@ -207,7 +216,7 @@ func (m *MamUpdater) handleFirstRun(ctx context.Context, mamID string) error {
 	m.httpClient.Jar.SetCookies(m.updatUrl, initialCookies)
 
 	if err := m.updateIP(ctx); err != nil {
-		return fmt.Errorf("first run failed: %w", err)
+		return fmt.Errorf("failed to update ip address on first run: %w", err)
 	}
 	return nil
 }
