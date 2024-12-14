@@ -112,7 +112,7 @@ func (m *MamUpdater) Run(ctx context.Context) error {
 	}
 	m.logger.Debug("ip address updated successfully")
 	// Write the current ip address to disk
-	if err := m.writeFile(m.config.IpPath, currentIP); err != nil {
+	if err := writeFile(m.config.IpPath, currentIP); err != nil {
 		return fmt.Errorf("failed to write new ip address: %w", err)
 	}
 	m.logger.Debug("successfully wrote new ip address to disk")
@@ -138,7 +138,7 @@ func (m *MamUpdater) getCurrentIP(ctx context.Context) (string, error) {
 }
 
 func (m *MamUpdater) hasIPChanged(currentIP string) (bool, error) {
-	oldIP, exists, err := m.readFile(m.config.IpPath)
+	oldIP, exists, err := readFile(m.config.IpPath)
 	if err != nil {
 		return false, err
 	}
@@ -146,7 +146,7 @@ func (m *MamUpdater) hasIPChanged(currentIP string) (bool, error) {
 }
 
 func (m *MamUpdater) shouldSkipUpdate() (bool, error) {
-	lastRunStr, exists, err := m.readFile(m.config.LastRunPath)
+	lastRunStr, exists, err := readFile(m.config.LastRunPath)
 	if err != nil {
 		return false, err
 	}
@@ -189,7 +189,7 @@ func (m *MamUpdater) updateIP(ctx context.Context) error {
 		return fmt.Errorf("failed to save cookies: %w", err)
 	}
 
-	if err := m.writeFile(m.config.LastRunPath, time.Now().Format(time.RFC3339)); err != nil {
+	if err := writeFile(m.config.LastRunPath, time.Now().Format(time.RFC3339)); err != nil {
 		return fmt.Errorf("failed to update last run time: %w", err)
 	}
 
@@ -211,7 +211,7 @@ func (m *MamUpdater) handleFirstRun(ctx context.Context, mamID, ipAddress string
 		return fmt.Errorf("failed to update ip address on first run: %w", err)
 	}
 
-	if err := m.writeFile(m.config.IpPath, ipAddress); err != nil {
+	if err := writeFile(m.config.IpPath, ipAddress); err != nil {
 		return fmt.Errorf("failed to write new ip address: %w", err)
 	}
 	m.logger.Debug("successfully wrote new ip address to disk")
@@ -249,7 +249,7 @@ func (m *MamUpdater) saveCookies(cookies []*http.Cookie) error {
 	return gob.NewEncoder(file).Encode(cookies)
 }
 
-func (m *MamUpdater) readFile(path string) (contents string, exists bool, err error) {
+func readFile(path string) (contents string, exists bool, err error) {
 	data, err := os.ReadFile(path)
 	if os.IsNotExist(err) {
 		return "", false, nil
@@ -260,6 +260,6 @@ func (m *MamUpdater) readFile(path string) (contents string, exists bool, err er
 	return string(data), true, nil
 }
 
-func (m *MamUpdater) writeFile(path, content string) error {
+func writeFile(path, content string) error {
 	return os.WriteFile(path, []byte(content), 0600)
 }
