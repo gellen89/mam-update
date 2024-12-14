@@ -47,6 +47,8 @@ func main() {
 		IpPath:      filepath.Join(appdirs.Data, "MAM.ip"),
 		LastRunPath: filepath.Join(appdirs.Data, "last_run_time"),
 		MamId:       mamId,
+		Force:       flagCfg.Force,
+		IpUrl:       getIpUrl(),
 		Logger:      logger,
 	}
 
@@ -136,4 +138,16 @@ func toSlogLevel(input string) slog.Level {
 	default:
 		return slog.LevelInfo
 	}
+}
+
+const (
+	defaultIpUrl = "https://ifconfig.io/ip"
+)
+
+func getIpUrl() string {
+	envUrl := os.Getenv("IP_URL")
+	if envUrl == "" {
+		return defaultIpUrl
+	}
+	return envUrl
 }

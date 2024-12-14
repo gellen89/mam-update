@@ -22,6 +22,7 @@ type Config struct {
 	LastRunPath string
 	MamId       *string
 	Force       bool
+	IpUrl       string
 	Logger      *slog.Logger
 }
 
@@ -38,7 +39,6 @@ type dynamicSeedboxResponse struct {
 }
 
 const (
-	ipUrl         = "https://ifconfig.io/ip"
 	dynSeedBoxUrl = "https://t.myanonamouse.net/json/dynamicSeedbox.php"
 	minWaitPeriod = time.Hour
 )
@@ -120,7 +120,7 @@ func (m *MamUpdater) Run(ctx context.Context) error {
 }
 
 func (m *MamUpdater) getCurrentIP(ctx context.Context) (string, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ipUrl, http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, m.config.IpUrl, http.NoBody)
 	if err != nil {
 		return "", err
 	}
