@@ -78,7 +78,7 @@ func (m *MamUpdater) Run(ctx context.Context) error {
 	// First run without cookie
 	if !hasCookie {
 		m.logger.Debug("no cookie found, handling first run")
-		return m.handleFirstRun(ctx, *m.config.MamId)
+		return m.handleFirstRun(ctx, *m.config.MamId, currentIP)
 	}
 
 	// Check if IP has changed
@@ -162,6 +162,7 @@ func (m *MamUpdater) shouldSkipUpdate() (bool, error) {
 	return time.Since(lastRun) < minWaitPeriod, nil
 }
 
+// Tells MaM new IP address
 func (m *MamUpdater) updateIP(ctx context.Context) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, dynSeedBoxUrl, http.NoBody)
 	if err != nil {
@@ -196,7 +197,7 @@ func (m *MamUpdater) updateIP(ctx context.Context) error {
 	return nil
 }
 
-func (m *MamUpdater) handleFirstRun(ctx context.Context, mamID string) error {
+func (m *MamUpdater) handleFirstRun(ctx context.Context, mamID, ipAddress string) error {
 	// Create initial cookie with MAM_ID
 	initialCookies := []*http.Cookie{
 		{
@@ -207,8 +208,13 @@ func (m *MamUpdater) handleFirstRun(ctx context.Context, mamID string) error {
 	m.httpClient.Jar.SetCookies(m.updatUrl, initialCookies)
 
 	if err := m.updateIP(ctx); err != nil {
-		return fmt.Errorf("first run failed: %w", err)
+		return fmt.Errorf("failed to update ip address on first run: %w", err)
 	}
+
+	if err := m.writeFile(m.config.IpPath, ipAddress); err != nil {
+		return fmt.Errorf("failed to write new ip address: %w", err)
+	}
+	m.logger.Debug("successfully wrote new ip address to disk")
 	return nil
 }
 
