@@ -141,7 +141,7 @@ func toSlogLevel(input string) slog.Level {
 }
 
 const (
-	defaultIpUrl = "https://ifconfig.io/ip"
+	defaultIpUrl = "https://api.ipify.org"
 )
 
 func getIpUrl() string {
