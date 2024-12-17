@@ -14,7 +14,10 @@ import (
 )
 
 func main() {
-	flagCfg := getFlags()
+	flagCfg, err := getFlags(os.Args[1:])
+	if err != nil {
+		panic(err)
+	}
 
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: getLogLevel(flagCfg),
@@ -72,7 +75,7 @@ type flagConfig struct {
 	LogLevel  *string
 }
 
-func getFlags() *flagConfig {
+func getFlags(args []string) (*flagConfig, error) {
 	var mamId string
 	flag.StringVar(&mamId, "mam-id", "", "Provide the mam-id used for the initial request.")
 	var mamDir string
@@ -82,14 +85,18 @@ func getFlags() *flagConfig {
 	var loglevel string
 	flag.StringVar(&loglevel, "level", "", "Specify a log level (debug, info, warn, error) default: info.")
 
-	flag.Parse()
+	flag.CommandLine = flag.NewFlagSet("", flag.ExitOnError) // Clear default flag set
+	err := flag.CommandLine.Parse(args)
+	if err != nil {
+		return nil, fmt.Errorf("unable to parse flags: %w", err)
+	}
 
 	return &flagConfig{
 		MamId:     &mamId,
 		ConfigDir: &mamDir,
 		Force:     force,
 		LogLevel:  &loglevel,
-	}
+	}, nil
 }
 
 func getMamId(flagCfg *flagConfig) *string {
