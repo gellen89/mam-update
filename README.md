@@ -8,11 +8,11 @@ The `MAM_ID` is only required for the very first run. Subsequent runs will pull 
 
 ### Environment Variables
 
-| Variable      | Description                                                                                                                                               | Required | Default Value          |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------------- |
-| MAM_ID        | The MAM ID given to you after creating a new session. This only needs to be provided on the first run. Subsequent runs pull from the stored cookies file. | false    |                        |
-| MAMUPDATE_DIR | The base directory that config, data, and cache are stored.                                                                                               | false    | $HOME/.mamupdate       |
-| LOG_LEVEL     | Can be used to set the log level (debug, info, warn, error)                                                                                               | false    | info                   |
+| Variable      | Description                                                                                                                                               | Required | Default Value         |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | --------------------- |
+| MAM_ID        | The MAM ID given to you after creating a new session. This only needs to be provided on the first run. Subsequent runs pull from the stored cookies file. | false    |                       |
+| MAMUPDATE_DIR | The base directory that config, data, and cache are stored.                                                                                               | false    | $HOME/.mamupdate      |
+| LOG_LEVEL     | Can be used to set the log level (debug, info, warn, error)                                                                                               | false    | info                  |
 | IP_URL        | Can be used to set the URL used to retrieve an IP address                                                                                                 | false    | https://api.ipify.org |
 
 ### CLI Flags

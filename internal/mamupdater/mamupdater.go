@@ -75,6 +75,8 @@ func (m *MamUpdater) Run(ctx context.Context) error {
 		return fmt.Errorf("failed to get current IP: %w", err)
 	}
 
+	m.logger.Debug(fmt.Sprintf("current ip address: %q", currentIP))
+
 	// First run without cookie
 	if !hasCookie {
 		m.logger.Debug("no cookie found, handling first run")
@@ -89,13 +91,13 @@ func (m *MamUpdater) Run(ctx context.Context) error {
 		return nil
 	}
 
-	m.logger.Debug("ip address changed, checking if should should update")
+	m.logger.Debug("ip address changed")
 
 	// Check last run time
 	if shouldSkip, err := m.shouldSkipUpdate(); err != nil {
 		return fmt.Errorf("failed to check last run time: %w", err)
 	} else if shouldSkip {
-		m.logger.Info("Last run was too recent, skipping update")
+		m.logger.Info("last run was too recent, skipping update")
 		return nil
 	}
 
