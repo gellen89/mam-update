@@ -26,3 +26,6 @@ clean: ## Cleans the bin directory
 
 lint: ## Runs the Go Linter
 	golangci-lint run
+
+test: ## Runs go tests
+	go test ./...
