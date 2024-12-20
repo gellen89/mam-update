@@ -24,7 +24,6 @@ func Run(ctx context.Context, args []string) error {
 		return fmt.Errorf("failed to initialize application: %w", err)
 	}
 
-	// Run the application
 	if err := application.Run(ctx); err != nil {
 		return fmt.Errorf("failed to run application: %w", err)
 	}
@@ -42,7 +41,7 @@ func New(args []string) (*App, error) {
 	}))
 
 	mamDir := getMamDir(flagCfg)
-	// Determine data directory
+
 	appDirs, err := getAppDirs(mamDir)
 	if err != nil {
 		return nil, err
