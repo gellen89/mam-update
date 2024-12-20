@@ -41,8 +41,9 @@ func New(args []string) (*App, error) {
 		Level: getLogLevel(flagCfg),
 	}))
 
+	mamDir := getMamDir(flagCfg)
 	// Determine data directory
-	appDirs, err := getAppDirs(flagCfg)
+	appDirs, err := getAppDirs(mamDir)
 	if err != nil {
 		return nil, err
 	}
@@ -55,6 +56,7 @@ func New(args []string) (*App, error) {
 		MamId:       getMamId(flagCfg),
 		Force:       flagCfg.Force,
 		IpUrl:       getIpUrl(),
+		SeedboxUrl:  getDynSeedboxUrl(),
 		Logger:      logger,
 	}
 
@@ -77,9 +79,9 @@ func (a *App) Run(ctx context.Context) error {
 	return nil
 }
 
-func getAppDirs(flagCfg *flagConfig) (*appdir.AppDirs, error) {
-	if flagCfg.ConfigDir != nil && *flagCfg.ConfigDir != "" {
-		return appdir.New(*flagCfg.ConfigDir), nil
+func getAppDirs(mamDir *string) (*appdir.AppDirs, error) {
+	if mamDir != nil && *mamDir != "" {
+		return appdir.New(*mamDir), nil
 	}
 	appDirs, err := appdir.NewFromAppName(".mamupdate")
 	if err != nil {
@@ -96,17 +98,18 @@ type flagConfig struct {
 }
 
 func getFlags(args []string) (*flagConfig, error) {
-	var mamId string
-	flag.StringVar(&mamId, "mam-id", "", "Provide the mam-id used for the initial request.")
-	var mamDir string
-	flag.StringVar(&mamDir, "mam-dir", "", "Provide the directory where the config and data will be persisted.")
-	var force bool
-	flag.BoolVar(&force, "force", false, "Specify force to override the last run time.")
-	var loglevel string
-	flag.StringVar(&loglevel, "level", "", "Specify a log level (debug, info, warn, error) default: info.")
+	flagSet := flag.NewFlagSet("mam-update", flag.ContinueOnError)
 
-	flag.CommandLine = flag.NewFlagSet("", flag.ExitOnError) // Clear default flag set
-	err := flag.CommandLine.Parse(args)
+	var mamId string
+	flagSet.StringVar(&mamId, "mam-id", "", "Provide the mam-id used for the initial request.")
+	var mamDir string
+	flagSet.StringVar(&mamDir, "mam-dir", "", "Provide the directory where the config and data will be persisted.")
+	var force bool
+	flagSet.BoolVar(&force, "force", false, "Specify force to override the last run time.")
+	var loglevel string
+	flagSet.StringVar(&loglevel, "level", "", "Specify a log level (debug, info, warn, error) default: info.")
+
+	err := flagSet.Parse(args)
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse flags: %w", err)
 	}
@@ -175,6 +178,18 @@ func getIpUrl() string {
 	envUrl := os.Getenv("IP_URL")
 	if envUrl == "" {
 		return defaultIpUrl
+	}
+	return envUrl
+}
+
+const (
+	defaultDynSeedboxUrl = "https://t.myanonamouse.net/json/dynamicSeedbox.php"
+)
+
+func getDynSeedboxUrl() string {
+	envUrl := os.Getenv("MAM_SEEDBOX_URL")
+	if envUrl == "" {
+		return defaultDynSeedboxUrl
 	}
 	return envUrl
 }

@@ -23,6 +23,7 @@ type Config struct {
 	MamId       *string
 	Force       bool
 	IpUrl       string
+	SeedboxUrl  string
 	Logger      *slog.Logger
 }
 
@@ -30,7 +31,7 @@ type MamUpdater struct {
 	config     *Config
 	httpClient *http.Client
 	logger     *slog.Logger
-	updatUrl   *url.URL
+	seedboxUrl *url.URL
 }
 
 type dynamicSeedboxResponse struct {
@@ -39,7 +40,6 @@ type dynamicSeedboxResponse struct {
 }
 
 const (
-	dynSeedBoxUrl = "https://t.myanonamouse.net/json/dynamicSeedbox.php"
 	minWaitPeriod = time.Hour
 )
 
@@ -48,7 +48,7 @@ func NewMamUpdater(config *Config) (*MamUpdater, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create cookie jar: %w", err)
 	}
-	u, err := url.Parse(dynSeedBoxUrl)
+	u, err := url.Parse(config.SeedboxUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func NewMamUpdater(config *Config) (*MamUpdater, error) {
 		config:     config,
 		httpClient: &http.Client{Jar: jar, Timeout: 10 * time.Second},
 		logger:     config.Logger,
-		updatUrl:   u,
+		seedboxUrl: u,
 	}, nil
 }
 
@@ -166,7 +166,7 @@ func (m *MamUpdater) shouldSkipUpdate() (bool, error) {
 
 // Tells MaM new IP address
 func (m *MamUpdater) updateIP(ctx context.Context) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, dynSeedBoxUrl, http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, m.config.SeedboxUrl, http.NoBody)
 	if err != nil {
 		return err
 	}
@@ -207,7 +207,7 @@ func (m *MamUpdater) handleFirstRun(ctx context.Context, mamID, ipAddress string
 			Value: mamID,
 		},
 	}
-	m.httpClient.Jar.SetCookies(m.updatUrl, initialCookies)
+	m.httpClient.Jar.SetCookies(m.seedboxUrl, initialCookies)
 
 	if err := m.updateIP(ctx); err != nil {
 		return fmt.Errorf("failed to update ip address on first run: %w", err)
@@ -237,7 +237,7 @@ func (m *MamUpdater) loadCookies() error {
 		return err
 	}
 
-	m.httpClient.Jar.SetCookies(m.updatUrl, cookies)
+	m.httpClient.Jar.SetCookies(m.seedboxUrl, cookies)
 	return nil
 }
 
