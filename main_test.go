@@ -17,7 +17,7 @@ func TestApp_Run_Success(t *testing.T) {
 
 	baseDir := t.TempDir()
 
-	t.Setenv("MAMUPDATE_DIR", baseDir)
+	t.Setenv("MAM_UPDATE_DIR", baseDir)
 	t.Setenv("MAM_SEEDBOX_URL", fmt.Sprintf("%s/mam", srv.URL))
 	t.Setenv("IP_URL", fmt.Sprintf("%s/ip", srv.URL))
 

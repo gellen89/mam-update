@@ -137,7 +137,7 @@ func getMamDir(flagCfg *flagConfig) *string {
 	if flagCfg.ConfigDir != nil && *flagCfg.ConfigDir != "" {
 		return flagCfg.ConfigDir
 	}
-	envMamDir := os.Getenv("MAMUPDATE_DIR")
+	envMamDir := os.Getenv("MAM_UPDATE_DIR")
 	if envMamDir != "" {
 		return &envMamDir
 	}

@@ -4,14 +4,14 @@ Program that handles dynamically setting the latest IP Address from your seedbox
 
 ## Configuration
 
-The `MAM_ID` is only required for the very first run. Subsequent runs will pull from the stored cookie, saved in the `$MAMUPDATE_DIR`.
+The `MAM_ID` is only required for the very first run. Subsequent runs will pull from the stored cookie, saved in the `$MAM_UPDATE_DIR`.
 
 ### Environment Variables
 
 | Variable      | Description                                                                                                                                               | Required | Default Value         |
 | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | --------------------- |
 | MAM_ID        | The MAM ID given to you after creating a new session. This only needs to be provided on the first run. Subsequent runs pull from the stored cookies file. | false    |                       |
-| MAMUPDATE_DIR | The base directory that config, data, and cache are stored.                                                                                               | false    | $HOME/.mamupdate      |
+| MAM_UPDATE_DIR | The base directory that config, data, and cache are stored.                                                                                               | false    | $HOME/.mamupdate      |
 | LOG_LEVEL     | Can be used to set the log level (debug, info, warn, error)                                                                                               | false    | info                  |
 | IP_URL        | Can be used to set the URL used to retrieve an IP address                                                                                                 | false    | https://api.ipify.org |
 
@@ -20,7 +20,7 @@ The `MAM_ID` is only required for the very first run. Subsequent runs will pull 
 | Flag     | Description                                                                                                                                                                 | Required | Default Value  |
 | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -------------- |
 | -mam-id  | The MAM ID given to you after creating a new session. This only needs to be provided on the first run. Subsequent runs pull from the stored cookies file. Overrides $MAM_ID | false    | $MAM_ID        |
-| -mam-dir | The base directory that config, data, and cache are stored. Overrides $MAMUPDATE_DIR                                                                                        | false    | $MAMUPDATE_DIR |
+| -mam-dir | The base directory that config, data, and cache are stored. Overrides $MAM_UPDATE_DIR                                                                                        | false    | $MAM_UPDATE_DIR |
 | -force   | Can be used to override the `last_run_time`                                                                                                                                 | false    | false          |
 | -level   | Can be used to set the log level (debug, info, warn, error). Overrides $LOG_LEVEL                                                                                           | false    | $LOG_LEVEL     |
 
@@ -100,7 +100,7 @@ Just like the above configuration, the `MAM_ID` is only needed for the first inv
 ```
 docker run \
 -e MAM_ID=<token> \
--e MAMUPDATE_DIR=/mam \
+-e MAM_UPDATE_DIR=/mam \
 -v /volume1/docker/mam/data:/mam \
 --user $(id -u):$(id -g) \
 --network container:gluetun \
