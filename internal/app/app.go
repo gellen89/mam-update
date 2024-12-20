@@ -14,18 +14,29 @@ import (
 )
 
 type App struct {
-	config  *mamupdater.Config
 	appdirs *appdir.AppDirs
+	updater *mamupdater.MamUpdater
+}
+
+func Run(ctx context.Context, args []string) error {
+	application, err := New(args)
+	if err != nil {
+		return fmt.Errorf("failed to initialize application: %w", err)
+	}
+
+	// Run the application
+	if err := application.Run(ctx); err != nil {
+		return fmt.Errorf("failed to run application: %w", err)
+	}
+	return nil
 }
 
 func New(args []string) (*App, error) {
-	// Parse flags
 	flagCfg, err := getFlags(args)
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse flags: %w", err)
 	}
 
-	// Initialize logger
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 		Level: getLogLevel(flagCfg),
 	}))
@@ -36,7 +47,6 @@ func New(args []string) (*App, error) {
 		return nil, err
 	}
 
-	// Build the configuration
 	config := &mamupdater.Config{
 		DataDir:     appDirs.Data,
 		CookiePath:  filepath.Join(appDirs.Data, "MAM.cookie"),
@@ -48,7 +58,12 @@ func New(args []string) (*App, error) {
 		Logger:      logger,
 	}
 
-	return &App{config: config, appdirs: appDirs}, nil
+	updater, err := mamupdater.NewMamUpdater(config)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create mam updater: %w", err)
+	}
+
+	return &App{appdirs: appDirs, updater: updater}, nil
 }
 
 func (a *App) Run(ctx context.Context) error {
@@ -56,12 +71,7 @@ func (a *App) Run(ctx context.Context) error {
 		return fmt.Errorf("failed to ensure directories: %w", err)
 	}
 
-	updater, err := mamupdater.NewMamUpdater(a.config)
-	if err != nil {
-		return fmt.Errorf("failed to create mam updater: %w", err)
-	}
-
-	if err := updater.Run(ctx); err != nil {
+	if err := a.updater.Run(ctx); err != nil {
 		return fmt.Errorf("mam update failed: %w", err)
 	}
 	return nil
