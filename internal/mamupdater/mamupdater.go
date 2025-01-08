@@ -156,12 +156,12 @@ func (m *MamUpdater) shouldSkipUpdate() (bool, error) {
 		return false, nil
 	}
 
-	lastRun, err := time.Parse(time.RFC3339, lastUpdateStr)
+	lastUpdate, err := time.Parse(time.RFC3339, lastUpdateStr)
 	if err != nil {
 		return false, err
 	}
 
-	return time.Since(lastRun) < minWaitPeriod, nil
+	return time.Since(lastUpdate) < minWaitPeriod, nil
 }
 
 // Tells MaM new IP address
