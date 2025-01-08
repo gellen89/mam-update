@@ -22,7 +22,7 @@ The `MAM_ID` is only required for the very first run. Subsequent runs will pull 
 | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | --------------- |
 | -mam-id  | The MAM ID given to you after creating a new session. This only needs to be provided on the first run. Subsequent runs pull from the stored cookies file. Overrides $MAM_ID | false    | $MAM_ID         |
 | -mam-dir | The base directory that config, data, and cache are stored. Overrides $MAM_UPDATE_DIR                                                                                       | false    | $MAM_UPDATE_DIR |
-| -force   | Can be used to override the `last_run_time`                                                                                                                                 | false    | false           |
+| -force   | Can be used to override the `last_update_time`                                                                                                                                 | false    | false           |
 | -level   | Can be used to set the log level (debug, info, warn, error). Overrides $LOG_LEVEL                                                                                           | false    | $LOG_LEVEL      |
 
 ### Persistent Data
@@ -31,8 +31,8 @@ The `MAM_ID` is only required for the very first run. Subsequent runs will pull 
   - This file will exist after the first run and stores HTTP Cookies from the HTTP Client cookie jar. This will be used used to populate the cookie jar on subsequent runs
 - `MAM.ip`
   - This file stores the IP address found during the most recent run. It is used on subsequent runs to determine if the IP address has changed.
-- `last_run_time`
-  - This file stores a timestamp that conforms to `RFC3339` of the last time the script ran. Ensures the script does not run more than once an hour.
+- `last_update_time`
+  - This file stores a timestamp that conforms to `RFC3339` of the last time the script sent the latest IP address to the server. Ensures the script does not send updates to the server more than once per hour.
 
 ## Building
 

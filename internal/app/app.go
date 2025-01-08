@@ -48,15 +48,15 @@ func New(args []string) (*App, error) {
 	}
 
 	config := &mamupdater.Config{
-		DataDir:     appDirs.Data,
-		CookiePath:  filepath.Join(appDirs.Data, "MAM.cookie"),
-		IpPath:      filepath.Join(appDirs.Data, "MAM.ip"),
-		LastRunPath: filepath.Join(appDirs.Data, "last_run_time"),
-		MamId:       getMamId(flagCfg),
-		Force:       flagCfg.Force,
-		IpUrl:       getIpUrl(),
-		SeedboxUrl:  getDynSeedboxUrl(),
-		Logger:      logger,
+		DataDir:        appDirs.Data,
+		CookiePath:     filepath.Join(appDirs.Data, "MAM.cookie"),
+		IpPath:         filepath.Join(appDirs.Data, "MAM.ip"),
+		LastUpdatePath: filepath.Join(appDirs.Data, "last_update_time"),
+		MamId:          getMamId(flagCfg),
+		Force:          flagCfg.Force,
+		IpUrl:          getIpUrl(),
+		SeedboxUrl:     getDynSeedboxUrl(),
+		Logger:         logger,
 	}
 
 	updater, err := mamupdater.NewMamUpdater(config)
