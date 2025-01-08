@@ -16,15 +16,15 @@ import (
 )
 
 type Config struct {
-	DataDir     string
-	CookiePath  string
-	IpPath      string
-	LastRunPath string
-	MamId       *string
-	Force       bool
-	IpUrl       string
-	SeedboxUrl  string
-	Logger      *slog.Logger
+	DataDir        string
+	CookiePath     string
+	IpPath         string
+	LastUpdatePath string
+	MamId          *string
+	Force          bool
+	IpUrl          string
+	SeedboxUrl     string
+	Logger         *slog.Logger
 }
 
 type MamUpdater struct {
@@ -148,7 +148,7 @@ func (m *MamUpdater) hasIPChanged(currentIP string) (bool, error) {
 }
 
 func (m *MamUpdater) shouldSkipUpdate() (bool, error) {
-	lastRunStr, exists, err := readFile(m.config.LastRunPath)
+	lastUpdateStr, exists, err := readFile(m.config.LastUpdatePath)
 	if err != nil {
 		return false, err
 	}
@@ -156,12 +156,12 @@ func (m *MamUpdater) shouldSkipUpdate() (bool, error) {
 		return false, nil
 	}
 
-	lastRun, err := time.Parse(time.RFC3339, lastRunStr)
+	lastUpdate, err := time.Parse(time.RFC3339, lastUpdateStr)
 	if err != nil {
 		return false, err
 	}
 
-	return time.Since(lastRun) < minWaitPeriod, nil
+	return time.Since(lastUpdate) < minWaitPeriod, nil
 }
 
 // Tells MaM new IP address
@@ -191,7 +191,7 @@ func (m *MamUpdater) updateIP(ctx context.Context) error {
 		return fmt.Errorf("failed to save cookies: %w", err)
 	}
 
-	if err := writeFile(m.config.LastRunPath, time.Now().Format(time.RFC3339)); err != nil {
+	if err := writeFile(m.config.LastUpdatePath, time.Now().Format(time.RFC3339)); err != nil {
 		return fmt.Errorf("failed to update last run time: %w", err)
 	}
 

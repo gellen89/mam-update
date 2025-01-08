@@ -27,8 +27,8 @@ func TestApp_Run_Success(t *testing.T) {
 		t.Fatalf("failed to run app: %v", err)
 	}
 
-	lastrunFile := fmt.Sprintf("%s/last_run_time", baseDir)
-	_, err = os.ReadFile(lastrunFile)
+	lastupdateFile := fmt.Sprintf("%s/last_update_time", baseDir)
+	_, err = os.ReadFile(lastupdateFile)
 	if err != nil {
 		t.Fatalf("last run time file does not exist: %v", err)
 	}
