@@ -11,10 +11,11 @@ The `MAM_ID` is only required for the very first run. Subsequent runs will pull 
 | Variable        | Description                                                                                                                                               | Required | Default Value                                      |
 | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | -------------------------------------------------- |
 | MAM_ID          | The MAM ID given to you after creating a new session. This only needs to be provided on the first run. Subsequent runs pull from the stored cookies file. | false    |                                                    |
+| MAM_ID_FILE          | The path to a file that contains the MAM ID.  | false    |                                                    |
 | MAM_UPDATE_DIR  | The base directory that config, data, and cache are stored.                                                                                               | false    | $HOME/.mamupdate                                   |
-| MAM_SEEDBOX_URL | Can be used to override the url used to communicate with the MaM servers to update the seedbox url.                                                       | false    | https://t.myanonamouse.net/json/dynamicSeedbox.php |
+| MAM_SEEDBOX_URL | Can be used to override the url used to communicate with the MaM servers to update the seedbox url.                                                       | false    | <https://t.myanonamouse.net/json/dynamicSeedbox.php> |
 | LOG_LEVEL       | Can be used to set the log level (debug, info, warn, error)                                                                                               | false    | info                                               |
-| IP_URL          | Can be used to set the URL used to retrieve an IP address                                                                                                 | false    | https://api.ipify.org                              |
+| IP_URL          | Can be used to set the URL used to retrieve an IP address                                                                                                 | false    | <https://api.ipify.org>                              |
 
 ### CLI Flags
 
@@ -65,7 +66,7 @@ This also includes SBOM as well as checksums with a GPG signature.
 ### Docker Images
 
 Docker images are pre-built for amd64 and arm64 and can be found in [ghcr.io for this repository](https://github.com/gellen89/mam-update/pkgs/container/mam-update).
-The registry also containts SBOM and a sig for each release.
+The registry also contains SBOM and a sig for each release.
 
 ## Release Verification
 

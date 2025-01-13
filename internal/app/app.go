@@ -47,12 +47,17 @@ func New(args []string) (*App, error) {
 		return nil, err
 	}
 
+	mamId, err := getMamId(flagCfg)
+	if err != nil {
+		return nil, err
+	}
+
 	config := &mamupdater.Config{
 		DataDir:        appDirs.Data,
 		CookiePath:     filepath.Join(appDirs.Data, "MAM.cookie"),
 		IpPath:         filepath.Join(appDirs.Data, "MAM.ip"),
 		LastUpdatePath: filepath.Join(appDirs.Data, "last_update_time"),
-		MamId:          getMamId(flagCfg),
+		MamId:          mamId,
 		Force:          flagCfg.Force,
 		IpUrl:          getIpUrl(),
 		SeedboxUrl:     getDynSeedboxUrl(),
@@ -121,15 +126,24 @@ func getFlags(args []string) (*flagConfig, error) {
 	}, nil
 }
 
-func getMamId(flagCfg *flagConfig) *string {
+func getMamId(flagCfg *flagConfig) (*string, error) {
 	if flagCfg.MamId != nil && *flagCfg.MamId != "" {
-		return flagCfg.MamId
+		return flagCfg.MamId, nil
 	}
 	envMamId := os.Getenv("MAM_ID")
 	if envMamId != "" {
-		return &envMamId
+		return &envMamId, nil
 	}
-	return nil
+	envMamIdFile := os.Getenv("MAM_ID_FILE")
+	if envMamIdFile != "" {
+		bits, err := os.ReadFile(envMamIdFile)
+		if err != nil {
+			return nil, err
+		}
+		mamId := string(bits)
+		return &mamId, nil
+	}
+	return nil, nil
 }
 
 func getMamDir(flagCfg *flagConfig) *string {
